@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificação de Comentários</title>
+</head>
+
+<body>
+    <h1>Classificação de Comentários</h1>
+    <form action="/treinar" method="post" enctype="multipart/form-data" onsubmit="return treinarModelo();">
+        <label for="treinamento">Carregar arquivo de treinamento:</label>
+        <input type="file" name="file" id="treinamento" required>
+        <button type="submit">Treinar Modelo</button>
+    </form>
+
+    <!-- Exibir mensagem de treinamento abaixo do formulário -->
+    <div id="treinamentoMessage"></div>
+
+    <form action="/classificar" method="post" enctype="multipart/form-data">
+        <label for="classificacao">Carregar arquivo para classificação:</label>
+        <input type="file" name="file" id="classificacao" required>
+        <button type="submit">Classificar Comentários</button>
+    </form>
+
+    <div id="results"></div>
+
+    <script>
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h2>Resultados:</h2>';
+
+            // Mostrar gráficos
+            const imgElement = document.createElement('img');
+            imgElement.src = 'data:image/png;base64,' + data.img_base64;
+            resultsDiv.appendChild(imgElement);
+
+            // Mostrar comentários com destaque para os positivos
+            data.result.forEach(comment => {
+                if (comment.classificacao === 'positivo') {
+                    resultsDiv.innerHTML += `<p><strong style="color: green;">${comment.comentario}</strong>: ${comment.classificacao}</p>`;
+                } else {
+                    resultsDiv.innerHTML += `<p>${comment.comentario}: ${comment.classificacao}</p>`;
+                }
+            });
+
+            // Adicionar botão de volta
+            const backButton = document.createElement('button');
+            backButton.innerText = 'Voltar';
+            backButton.onclick = function () {
+                window.location.href = '/';
+            };
+            resultsDiv.appendChild(backButton);
+        }
+
+        async function treinarModelo() {
+            const form = document.forms[0];
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/treinar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Exibir mensagem de treinamento abaixo do formulário
+                const treinamentoMessage = document.getElementById('treinamentoMessage');
+                treinamentoMessage.innerHTML = `<p>${result.message}</p>`;
+
+                // Evitar que o formulário redirecione
+                return false;
+            } catch (error) {
+                console.error('Erro:', error);
+                // Permitir que o formulário redirecione se houver um erro
+                return true;
+            }
+        }
+
+        async function classificarComentarios() {
+            const form = document.forms[1];
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/classificar', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
