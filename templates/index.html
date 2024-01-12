@@ -1,15 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classificação de Comentários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #treinamentoMessage {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        #results {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
     <h1>Classificação de Comentários</h1>
-    <form action="/treinar" method="post" enctype="multipart/form-data" onsubmit="return treinarModelo();">
+    <form action="/treinar" method="post" enctype="multipart/form-data" onsubmit="return treinarModelo(event);">
         <label for="treinamento">Carregar arquivo de treinamento:</label>
         <input type="file" name="file" id="treinamento" required>
         <button type="submit">Treinar Modelo</button>
@@ -33,7 +98,7 @@
 
             // Mostrar gráficos
             const imgElement = document.createElement('img');
-            imgElement.src = 'data:image/png;base64,' + data.img_base64;
+            imgElement.src = 'data:static/image/png;base64,' + data.img_base64;
             resultsDiv.appendChild(imgElement);
 
             // Mostrar comentários com destaque para os positivos
@@ -54,9 +119,12 @@
             resultsDiv.appendChild(backButton);
         }
 
-        async function treinarModelo() {
+        async function treinarModelo(event) {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
+
             const form = document.forms[0];
             const formData = new FormData(form);
+            const treinamentoMessage = document.getElementById('treinamentoMessage');
 
             try {
                 const response = await fetch('/treinar', {
@@ -67,16 +135,15 @@
                 const result = await response.json();
 
                 // Exibir mensagem de treinamento abaixo do formulário
-                const treinamentoMessage = document.getElementById('treinamentoMessage');
                 treinamentoMessage.innerHTML = `<p>${result.message}</p>`;
-
-                // Evitar que o formulário redirecione
-                return false;
             } catch (error) {
                 console.error('Erro:', error);
-                // Permitir que o formulário redirecione se houver um erro
-                return true;
+                // Exibir mensagem de erro abaixo do formulário
+                treinamentoMessage.innerHTML = `<p>Erro ao treinar o modelo. Por favor, tente novamente.</p>`;
             }
+
+            // Evitar que o formulário redirecione
+            return false;
         }
 
         async function classificarComentarios() {

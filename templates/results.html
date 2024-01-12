@@ -1,20 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados da Classificação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        img {
+            max-width: 80%;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Colorindo as linhas com base na classificação */
+        .positivo-row {
+            background-color: #e6ffe6;
+            /* Verde claro para positivo */
+        }
+
+        .negativo-row {
+            background-color: #ffe6e6;
+            /* Vermelho claro para negativo */
+        }
+    </style>
 </head>
+
 <body>
     <h2>Resultados da Classificação:</h2>
 
     <!-- Mostrar gráficos -->
-    <img src="{{ img_path }}" alt="Gráficos">
+    <img src="{{ url_for('static', filename='image/result.png') }}" alt="Gráficos">
 
     <!-- Mostrar dados classificados -->
     {{ result | safe }}
 
-    <!-- Adicionar botão de volta -->
+    <!-- Botão de volta -->
     <button onclick="window.location.href='/';">Voltar</button>
 </body>
+
 </html>
