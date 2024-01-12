@@ -15,9 +15,9 @@ def treinar_modelo():
     try:
         file = request.files['file']
         classifier.treinar_modelo(file)
-        return jsonify({'message': 'Treinamento concluído com sucesso!'})
+        return jsonify({'message': 'Treinamento concluído com sucesso!', 'status': 'success'})
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e), 'status': 'error'})
 
 @app.route('/classificar', methods=['POST'])
 def classificar_comentarios():

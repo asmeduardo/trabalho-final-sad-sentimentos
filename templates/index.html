@@ -69,6 +69,16 @@
             height: auto;
             margin-top: 20px;
         }
+
+        .success-message {
+            color: #008000;
+            /* Verde */
+        }
+
+        .error-message {
+            color: #FF0000;
+            /* Vermelho */
+        }
     </style>
 </head>
 
@@ -135,11 +145,11 @@
                 const result = await response.json();
 
                 // Exibir mensagem de treinamento abaixo do formulário
-                treinamentoMessage.innerHTML = `<p>${result.message}</p>`;
+                treinamentoMessage.innerHTML = `<p class="${result.status === 'success' ? 'success-message' : 'error-message'}">${result.message}</p>`;
             } catch (error) {
                 console.error('Erro:', error);
                 // Exibir mensagem de erro abaixo do formulário
-                treinamentoMessage.innerHTML = `<p>Erro ao treinar o modelo. Por favor, tente novamente.</p>`;
+                treinamentoMessage.innerHTML = `<p class="error-message">Erro ao treinar o modelo. Por favor, tente novamente.</p>`;
             }
 
             // Evitar que o formulário redirecione

@@ -1,8 +1,18 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+stop_words = set(stopwords.words('portuguese'))
+stop_words.update(["pra", "cola"])  # Adicionando "pra" e "cola" à lista de stopwords
+lemmatizer = WordNetLemmatizer()
 
 class Classifier:
     def __init__(self, app):
@@ -37,11 +47,14 @@ class Classifier:
         plt.title('Porcentagem de Comentários Positivos')
 
         plt.subplot(1, 2, 2)
-        words_freq = pd.Series(' '.join(data['Comentário']).split()).value_counts()[:5]
+        # Pré-processamento: Remover stopwords e lematização
+        comments = ' '.join(data['Comentário']).lower()
+        words_lemmatized = [lemmatizer.lemmatize(word) for word in comments.split() if word not in stop_words]
+        words_freq = pd.Series(words_lemmatized).value_counts()[:5]
+
         words_freq.plot.pie(autopct='%1.1f%%')
         plt.title('Top 5 Palavras Mais Frequentes')
 
         img_path = "static/image/result.png"  # Alteração no caminho da imagem
         plt.savefig(os.path.join(self.app.root_path, img_path))
         return img_path
-
